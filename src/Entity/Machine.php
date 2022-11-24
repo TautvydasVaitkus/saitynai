@@ -51,7 +51,7 @@ class Machine
     private $location;
 
     /**
-     * @Orm\OneToOne(targetEntity="App\Entity\Customer", inversedBy="machine")
+     * @ORM\OneToMany (targetEntity="App\Entity\Customer", mappedBy="machine")
      */
     private $customer;
 
@@ -153,12 +153,13 @@ class Machine
     }
 
     /**
-     * @return Customer
+     * @return Collection|Customer[]
      */
-    public function getCustomer(): Customer
+    public function getMachines(): Collection
     {
         return $this->customer;
     }
+
 
 
 }

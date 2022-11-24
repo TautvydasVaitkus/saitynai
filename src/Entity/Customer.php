@@ -94,7 +94,7 @@ class Customer
         return $this->id;
     }
 
-    public function getMachine(): Machine
+    public function getMachine(): ?Machine
     {
         return $this->machine;
     }

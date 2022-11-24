@@ -20,6 +20,7 @@ class MachineController extends AbstractApiController
      */
     public function indexAction(Request $request): Response
     {
+
         $machines = $this->getDoctrine()->getRepository(Machine::class)->findAll();
 
         return $this->json($machines);
@@ -36,7 +37,7 @@ class MachineController extends AbstractApiController
     }
 
     /**
-     * @Route("/locations/{id}/machines/create", name="machines_create", methods={"POST"})
+     * @Route("/locations/{id}/machines", name="machines_create", methods={"POST"})
      */
     public function createAction(Request $request, int $id): Response
     {
@@ -48,6 +49,33 @@ class MachineController extends AbstractApiController
         {
             return $this->json("Location was not found with id " . $id, 404);
         }
+
+        $name = $request->request->get('name');
+        $cpu = $request->request->get('cpu');
+        $storage = $request->request->get('storage');
+        $ram = $request->request->get('ram');
+        $price = $request->request->get('price');
+
+        if($name == "") {
+            return $this->json("Field 'name' cannot be blank", 400);
+        }
+
+        if($cpu == "") {
+            return $this->json("Field 'cpu' cannot be blank", 400);
+        }
+
+        if($storage == "") {
+            return $this->json("Field 'storage' cannot be blank", 400);
+        }
+
+        if($ram == "") {
+            return $this->json("Field 'ram' cannot be blank", 400);
+        }
+
+        if($price == "") {
+            return $this->json("Field 'price' cannot be blank", 400);
+        }
+
 
         $machine = new Machine();
         $machine->setName($request->request->get('name'));
@@ -62,11 +90,11 @@ class MachineController extends AbstractApiController
         $this->getDoctrine()->getManager()->persist($machine);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->json($machine);
+        return $this->json($machine, 201);
     }
 
     /**
-     * @Route("/locations/{locationId}/machines/{id}")
+     * @Route("/locations/{locationId}/machines/{id}", name="machine_show", methods={"GET"})
      */
     public function show(int $id, int $locationId): Response
     {
@@ -97,13 +125,13 @@ class MachineController extends AbstractApiController
             'price' => $machine->getPrice(),
         ];
 
-        return $this->json($data);
+        return $this->json($data, 200);
     }
 
     /**
-     * @Route("/locations/{locationId}/machines/edit/{id}", name="machine_edit", methods={"PUT"})
+     * @Route("/locations/{locationId}/machines/{id}", name="machine_edit", methods={"PUT"})
      */
-    public function edit(int $locationId, int $id, Request $request): Response
+    public function edit(int $id, int $locationId, Request $request): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -126,6 +154,32 @@ class MachineController extends AbstractApiController
             return $this->json("This location doesn't have a machine with id " . $id, 404);
         }
 
+        $name = $request->request->get('name');
+        $cpu = $request->request->get('cpu');
+        $storage = $request->request->get('storage');
+        $ram = $request->request->get('ram');
+        $price = $request->request->get('price');
+
+        if($name == "") {
+            return $this->json("Field 'name' cannot be blank", 400);
+        }
+
+        if($cpu == "") {
+            return $this->json("Field 'cpu' cannot be blank", 400);
+        }
+
+        if($storage == "") {
+            return $this->json("Field 'storage' cannot be blank", 400);
+        }
+
+        if($ram == "") {
+            return $this->json("Field 'ram' cannot be blank", 400);
+        }
+
+        if($price == "") {
+            return $this->json("Field 'price' cannot be blank", 400);
+        }
+
         $machine->setName($request->request->get('name'));
         $machine->setCpu($request->request->get('cpu'));
         $machine->setStorage($request->request->get('storage'));
@@ -142,13 +196,13 @@ class MachineController extends AbstractApiController
             'price' => $machine->getPrice(),
         ];
 
-        return $this->json($data);
+        return $this->json($data, 200);
     }
 
     /**
-     * @Route("/locations/{locationId}/machines/delete/{id}", name="machine_delete", methods={"DELETE"})
+     * @Route("/locations/{locationId}/machines/{id}", name="machine_delete", methods={"DELETE"})
      */
-    public function delete(int $locationId, int $id): Response
+    public function delete(int $id, Request $request, $locationId): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -174,6 +228,6 @@ class MachineController extends AbstractApiController
         $entityManager->remove($machine);
         $entityManager->flush();
 
-        return $this->json("Machine was removed successfully with id " . $id);
+        return $this->json("Machine was removed successfully with id " . $id, 204);
     }
 }

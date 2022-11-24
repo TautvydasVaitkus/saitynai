@@ -28,7 +28,7 @@ class CustomerController extends AbstractApiController
     }
 
     /**
-     * @Route("/locations/{locationId}/machines/{machineId}/customer", name="machine_customer_show", methods={"GET"})
+     * @Route("/locations/{locationId}/machines/{machineId}/customers", name="machine_customer_show", methods={"GET"})
      */
     public function machineCustomer(int $locationId, int $machineId)
     {
@@ -57,35 +57,137 @@ class CustomerController extends AbstractApiController
     }
 
     /**
-     * @Route("/customer/create", name="customer_create", methods={"POST"})
+     * @Route("/locations/{locationId}/machines/{machineId}/customers/{id}", name="customer_show", methods={"GET"})
+     */
+    public function show(int $locationId, int $machineId, int $id): Response
+    {
+        $location = $this->getDoctrine()->getRepository(Location::class)->find($locationId);
+
+        if(!$location)
+        {
+            return $this->json("Location was not found with id " . $locationId, 404);
+        }
+
+        $machine = $this->getDoctrine()->getRepository(Machine::class)->find($machineId);
+
+        if(!$machine)
+        {
+            return $this->json("Machine was not found with id " . $machineId, 404);
+        }
+
+        if($locationId != $machine->getLocation()->getId())
+        {
+            return $this->json("This location doesn't have a machine with id " . $machineId, 404);
+        }
+
+        $customer = $this->getDoctrine()->getRepository(Customer::class)->find($id);
+
+        if(!$customer)
+        {
+            return $this->json("Customer was not found with id " . $id, 404);
+        }
+
+        $data = [
+            'firstName' => $customer->getFirstName(),
+            'lastName' => $customer->getLastName(),
+            'email' => $customer->getEmail(),
+        ];
+
+        return $this->json($data, 200);
+    }
+
+    /**
+     * @Route("/locations/{locationId}/machines/{machineId}/customers", name="customer_create", methods={"POST"})
      */
     public function createAction(Request $request, int $locationId, int $machineId): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
+
+        $location = $this->getDoctrine()->getRepository(Location::class)->find($locationId);
+
+        if(!$location)
+        {
+            return $this->json("Location was not found with id " . $locationId, 404);
+        }
+
+        $machine = $this->getDoctrine()->getRepository(Machine::class)->find($machineId);
+
+        $firstName = $request->request->get('firstName');
+        $lastName = $request->request->get('lastName');
+        $email = $request->request->get('email');
+
+        if($firstName == "")
+        {
+            return $this->json("Field 'firstName' cannot be blank", 400);
+        }
+
+        if($lastName == "")
+        {
+            return $this->json("Field 'lastName' cannot be blank", 400);
+        }
+
+        if($email == "")
+        {
+            return $this->json("Field 'email' cannot be blank", 400);
+        }
 
         $customer = new Customer();
         $customer->setFirstName($request->request->get('firstName'));
         $customer->setLastName($request->request->get('lastName'));
         $customer->setEmail($request->request->get('email'));
 
+        $customer->setMachine($machine);
 
        $this->getDoctrine()->getManager()->persist($customer);
        $this->getDoctrine()->getManager()->flush();
 
-       return $this->json($customer);
+       return $this->json($customer, 201);
     }
 
     /**
-     * @Route("/customers/edit/{id}", name="customer_edit", methods={"PUT"})
+     * @Route("/locations/{locationId}/machines/{machineId}/customers/{id}", name="customer_edit", methods={"PUT"})
      */
-    public function edit(Request $request, int $id): Response
+    public function edit(int $id, int $locationId, int $machineId, Request $request): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
+
+        $location = $this->getDoctrine()->getRepository(Location::class)->find($locationId);
+
+        if(!$location)
+        {
+            return $this->json("Location was not found with id " . $locationId, 404);
+        }
+
+        $machine = $this->getDoctrine()->getRepository(Machine::class)->find($machineId);
+
+
+        $this->getDoctrine()->getManager()->persist($machine);
+        $this->getDoctrine()->getManager()->flush();
+
         $customer = $this->getDoctrine()->getRepository(Customer::class)->find($id);
 
         if(!$customer)
         {
-            return $this->json('No customer with this id ' . $id, 404 );
+            return $this->json("Customer does not exist", 404);
+        }
+
+        $firstName = $request->request->get('firstName');
+        $lastName = $request->request->get('lastName');
+        $email = $request->request->get('email');
+
+        if($firstName == "")
+        {
+            return $this->json("Field 'firstName' cannot be blank", 400);
+        }
+
+        if($lastName == "")
+        {
+            return $this->json("Field 'lastName' cannot be blank", 400);
+        }
+
+        if($email == "")
+        {
+            return $this->json("Field 'email' cannot be blank", 400);
         }
 
         $customer->setFirstName($request->request->get('firstName'));
@@ -100,75 +202,38 @@ class CustomerController extends AbstractApiController
             'email' => $customer->getEmail(),
         ];
 
-        return $this->json($data);
+        return $this->json($data, 200);
     }
 
     /**
-     * @Route("/customers/delete/{id}", name="customer_delete", methods={"DELETE"})
+     * @Route("/locations/{locationId}/machines/{machineId}/customers/{id}", name="customer_delete", methods={"DELETE"})
      */
-    public function delete(int $id): Response
+    public function delete(int $locationId, int $machineId, int $id, Request $request): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
+        $location = $this->getDoctrine()->getRepository(Location::class)->find($locationId);
+
+        if(!$location)
+        {
+            return $this->json("Location was not found with id " . $locationId, 404);
+        }
+
+        $machine = $this->getDoctrine()->getRepository(Machine::class)->find($machineId);
+
+
+        $this->getDoctrine()->getManager()->persist($machine);
+        $this->getDoctrine()->getManager()->flush();
+
         $customer = $this->getDoctrine()->getRepository(Customer::class)->find($id);
 
         if(!$customer)
         {
-            return $this->json("Customer was not found with id " . $id, 400);
+            return $this->json("Customer does not exist", 404);
         }
 
         $entityManager->remove($customer);
         $entityManager->flush();
 
-        return $this->json("Customer was removed successfully with id " . $id);
-    }
-
-    /**
-     * @Route("/customers/{id}/machine", name="customer_machine_assign", methods={"PUT"})
-     */
-    public function customerMachineEdit(int $id, Request $request): Response
-    {
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $customer = $this->getDoctrine()->getRepository(Customer::class)->find($id);
-
-        if(!$customer)
-        {
-            return $this->json('No customer with this id ' . $id, 404 );
-        }
-
-        $machineId = $request->request->get('machineId');
-
-        if($machineId != null)
-        {
-
-            $machine = $this->getDoctrine()->getRepository(Machine::class)->find($machineId);
-
-            if(!$machine)
-            {
-                return $this->json('No machine with this id ' . $customer->getMachine(), 404 );
-            }
-        }
-
-        $customer->setFirstName($customer->getFirstName());
-        $customer->setLastName($customer->getLastName());
-        $customer->setEmail($customer->getEmail());
-        if($machineId == null)
-        {
-            $customer->setMachine(null);
-        }
-        else {
-            $customer->setMachine($machine);
-        }
-
-        $entityManager->flush();
-
-        $data = [
-            'id' => $customer->getId(),
-            'firstName' => $customer->getFirstName(),
-            'lastName' => $customer->getLastName(),
-            'email' => $customer->getEmail(),
-        ];
-
-        return $this->json($data);
+        return $this->json("Customer was removed successfully with id " . $id, 204);
     }
 }

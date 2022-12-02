@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\MachineRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -54,6 +56,10 @@ class Machine
      * @ORM\OneToMany (targetEntity="App\Entity\Customer", mappedBy="machine")
      */
     private $customer;
+
+    public function __construct() {
+        $this->customer = new ArrayCollection();
+    }
 
     /**
      * @return string|null
@@ -155,7 +161,7 @@ class Machine
     /**
      * @return Collection|Customer[]
      */
-    public function getMachines(): Collection
+    public function getCustomers(): Collection
     {
         return $this->customer;
     }

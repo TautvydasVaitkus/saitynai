@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Customer;
 use App\Entity\Machine;
 use App\Entity\Location;
 use App\Form\Type\MachineType;
@@ -223,6 +224,12 @@ class MachineController extends AbstractApiController
         if($locationId != $machine->getLocation()->getId())
         {
             return $this->json("This location doesn't have a machine with id " . $id, 404);
+        }
+
+        $customer = $this->getDoctrine()->getRepository(Customer::class)->findBy(array('machine' => $id));
+
+        if($customer) {
+            return $this->json("Cannot delete machine, because it has dependency with customer", 400);
         }
 
         $entityManager->remove($machine);

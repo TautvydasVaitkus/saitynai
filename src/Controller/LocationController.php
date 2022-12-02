@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Location;
+use App\Entity\Machine;
 use App\Form\Type\LocationType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 
 /**
@@ -111,6 +114,13 @@ class LocationController extends AbstractApiController
         if(!$location)
         {
             return $this->json("Location was not found with id " . $id, 404);
+        }
+
+        $machine = $this->getDoctrine()->getRepository(Machine::class)->findBy(array('location' => $id));
+
+        if($machine)
+        {
+            return $this->json("Cannot delete location, because it has dependency with machine", 400);
         }
 
         $entityManager->remove($location);

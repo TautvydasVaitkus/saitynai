@@ -1,0 +1,144 @@
+body {
+    background: red;
+}
+
+.fade-in {
+    opacity: 1;
+    animation-name: fadeInOpacity;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 0.5s;
+}
+
+@keyframes fadeInOpacity {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.welcome {
+    margin-top: 20px;
+    color: #fff;
+    min-height: 380px;
+    padding: 80px 60px;
+    border-radius: 23px;
+    background-image: url("../images/banner-bg.jpg");
+    background-position: center center;
+    background-size: cover;
+}
+
+.welcome em {
+    color: #007bff;
+    text-decoration: none;
+    font-style: normal;
+}
+
+.welcome h4 {
+    font-size: 45px;
+    margin-bottom: 25px;
+}
+
+.welcome .row {
+    flex-wrap: initial;
+}
+
+.header-text {
+    text-transform: uppercase;
+}
+
+.main-button a {
+    background-color: #007bff;;
+    font-size: 14px;
+    color: #fff;
+    padding: 12px 30px;
+    display: inline-block;
+    border-radius: 25px;
+    font-weight: 400;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    transition: all .3s;
+    position: relative;
+    overflow: hidden;
+}
+
+body .my-5 {
+    margin-top: 229px !important;
+}
+
+.server-image {
+    max-height: 200px;
+}
+
+.image-left {
+    text-align: -webkit-center;
+}
+
+.our-locations {
+    margin-top: 60px;
+    padding: 30px;
+    background-color: #1f2122;
+    border-radius: 23px;
+}
+
+.our-locations .item {
+    background-color: #27292a;
+    padding: 30px 15px;
+    border-radius: 23px;
+    margin-bottom: 30px;
+}
+
+.our-locations .row .countries:nth-child(n+5) {
+    display: none;
+}
+
+.our-locations h4 {
+    font-size: 15px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    display: inline-block;
+}
+
+.heading-section h4 {
+    color: #007bff;
+    font-size: 34px;
+    text-decoration: none;
+    margin-bottom: 30px;
+}
+
+.heading-section em {
+    color: white;
+    text-decoration: underline;
+    font-style: normal;
+}
+
+.countries {
+    color: white;
+}
+
+.nav-link {
+    padding: 10px 0px;
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none !important;
+}
+
+.all-locations {
+    border-radius: 23px;
+    background-color: #1f2122;
+    padding: 30px;
+    margin-top: 20px;
+}
+
+.all-locations ul li {
+    border-bottom: 1px solid #27292a;
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    list-style: none;
+}

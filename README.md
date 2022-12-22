@@ -62,7 +62,7 @@ Galimi atsako kodai:
 
 &nbsp;
 ```http
-/api/v1/locations
+POST /api/v1/locations
 ```
 Body:
 ```json
